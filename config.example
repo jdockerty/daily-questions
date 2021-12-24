@@ -1,0 +1,13 @@
+---
+provider: gmail
+user: authAccount@gmail.com
+password: verySecretPassword
+to:
+  - authAccount@gmail.com
+  - anotherUser@yahoo.com
+from: authAccount@gmail.com
+subject: Your subject
+content: |
+  Your message
+  goes
+  here
