@@ -1,0 +1,26 @@
+name: daily questions workflow
+
+env:
+  PROJECT_REGISTRY: ghcr.io/jdockerty/daily-questions
+
+on:
+  push:
+    tags:
+      - '*'
+
+
+jobs:
+  build_push_container:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: login to ghcr.io
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: build docker container
+        run: |
+          docker build -t ${{ env.PROJECT_REGISTRY }}:${{ github.ref_name }} .
+      - name: push container
+        run: |
+          docker push ${{ env.PROJECT_REGISTRY }}:${{ github.ref_name }}
