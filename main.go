@@ -45,7 +45,12 @@ func main() {
 	}
 
 	conf := &Config{}
-	yaml.Unmarshal(b, conf)
+	err = yaml.Unmarshal(b, conf)
+	if err != nil {
+		log.Fatalf("Unable to unmarshal configuration at %s: %s\n", configPath, err)
+	}
+	
+	log.Println("Configuration unmarshaled successfully.")
 
 	if conf.User == "" {
 		log.Fatalln("DAILY_EMAIL environment variable not provided, cannot authenticate.")
@@ -54,20 +59,28 @@ func main() {
 	}
 
 	auth := sasl.NewPlainClient(conf.User, conf.User, conf.Password)
+	log.Println("Created security and authentication layer.")
 
 	// We join the strings here for a neat 'To: <addresses>' formatted message, otherwise the recipients are BCC'd into the email.
 	recipients := strings.Join(conf.To, ",")
+	log.Printf("Contents will be sent to: %s\n", recipients)
 
 	fmtMsg := fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s\r\n", recipients, conf.Subject, conf.Content)
 	msg := strings.NewReader(fmtMsg)
+	log.Printf("Message content is:\n%s\n", conf.Content)
 
 	serverAddr, ok := providerToSMTPServer[conf.Provider]
 	if !ok {
 		log.Fatalf("email provider %s does not exist in the mapping", conf.Provider)
 	}
 
+	log.Println("Using server address:", serverAddr)
+
 	err = smtp.SendMail(serverAddr, auth, conf.User, conf.To, msg)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("Email sent successfully.")
+	
 }
