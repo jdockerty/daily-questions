@@ -20,4 +20,4 @@
 /Godeps/
 
 # Local configuration
-*.yaml
+test-conf.yaml
