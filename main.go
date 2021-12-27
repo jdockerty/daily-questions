@@ -53,9 +53,9 @@ func main() {
 	log.Println("Configuration unmarshaled successfully.")
 
 	if conf.User == "" {
-		log.Fatalln("DAILY_EMAIL environment variable not provided, cannot authenticate.")
+		log.Fatalln("Username/email not provided, cannot authenticate.")
 	} else if conf.Password == "" {
-		log.Fatalln("DAILY_PASS environment variable not provided, cannot authenticate.")
+		log.Fatalln("Account password/app token not provided, cannot authenticate.")
 	}
 
 	auth := sasl.NewPlainClient(conf.User, conf.User, conf.Password)
